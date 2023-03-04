@@ -22,6 +22,12 @@ var { AK, SK } = hamibot.env;
 // 本地存储数据
 var storage = storages.create("data");
 
+
+// 自定义低分辨率高度宽度
+var myheight = 1600;
+var mywidth = 720;
+
+
 /**
  * 检查和设置运行环境
  * @param whether_mute {String} 是否在运行过程中静音 "yes":开启; "no"(默认):不开启
@@ -249,12 +255,12 @@ function random_time(time) {
  */
 function refresh(orientation) {
     if (orientation)
-        swipe(device.width / 2, (device.height * 13) / 15,
-            device.width / 2, (device.height * 2) / 15,
+        swipe(mywidth / 2, (myheight * 13) / 15,
+            mywidth / 2, (myheight * 2) / 15,
             random_time(delay_time / 2));
     else
-        swipe(device.width / 2, (device.height * 6) / 15,
-            device.width / 2, (device.height * 12) / 15,
+        swipe(mywidth / 2, (myheight * 6) / 15,
+            mywidth / 2, (myheight * 12) / 15,
             random_time(delay_time / 2));
     sleep(random_time(delay_time));
 }
@@ -410,196 +416,7 @@ sleep(random_time(delay_time / 2));
 log("点击:" + "my_back");
 id("my_back").findOne().click();
 
-// 去province模块
-log("去province模块");
-sleep(random_time(delay_time));
-log("等待:" + "android.view.ViewGroup");
-className("android.view.ViewGroup").depth(15).waitFor();
-sleep(random_time(delay_time));
-log("点击:" + "android.view.ViewGroup");
-// 存在 亮点 栏目时要额外判断
-if (text("亮点").exists()) {
-    className("android.view.ViewGroup").depth(15).findOnce(2).child(4).click();
-} else {
-    className("android.view.ViewGroup").depth(15).findOnce(2).child(3).click();
-}
-
-/*
- **********本地频道*********
- */
-if (typeof (finish_dict['本地频道']) != "undefined" && !finish_dict['本地频道'][0]) {
-    // 去本地频道
-    log("去本地频道");
-    log("等待:" + "android.widget.LinearLayout");
-    className("android.widget.LinearLayout").clickable(true).depth(26).waitFor();
-    sleep(random_time(delay_time));
-    log("点击:" + "android.widget.LinearLayout");
-    className("android.widget.LinearLayout").clickable(true).depth(26).drawingOrder(1).findOne().click();
-    sleep(random_time(delay_time));
-    back();
-}
-
-/*
- *********************阅读部分********************
- */
-
-// 把音乐暂停
-//
-log("把音乐暂停");
-media.pauseMusic();
-var back_track_flag = 0;
-
-/*
- **********我要选读文章与分享与广播学习*********
- */
-
-// 打开电台广播
-if (!finish_dict['视听学习时长'][0] && !finish_dict['我要选读文章'][0]) {
-    log("打开电台广播");
-    sleep(random_time(delay_time));
-    my_click_clickable("电台");
-    sleep(random_time(delay_time));
-    my_click_clickable("听广播");
-    sleep(random_time(delay_time));
-    log("等待:" + "lay_state_icon");
-    id("lay_state_icon").waitFor();
-    var lay_state_icon_pos = id("lay_state_icon").findOne().bounds();
-    click(lay_state_icon_pos.centerX(), lay_state_icon_pos.centerY());
-    sleep(random_time(delay_time));
-    var home_bottom = id("home_bottom_tab_icon_large").findOne().bounds();
-    click(home_bottom.centerX(), home_bottom.centerY());
-}
-
-// 阅读文章次数
-var count = 0;
-
-while (count < 6 - finish_dict['我要选读文章'][1] / 2) {
-    if (!id("comm_head_title").exists() || !className("android.widget.TextView").depth(27).text("切换地区").exists()) back_track();
-    sleep(random_time(delay_time));
-
-    refresh(false);
-
-    var article = id("general_card_image_id").find();
-
-    if (article.length == 0) {
-        refresh(false);
-        continue;
-    }
-
-    for (var i = 0; i < article.length; i++) {
-        log("阅读文章：" + i);
-        sleep(random_time(500));
-
-        try {
-            click(article[i].bounds().centerX(), article[i].bounds().centerY());
-        } catch (error) {
-            continue;
-        }
-        sleep(random_time(delay_time));
-        // 跳过专栏与音乐
-        if (className("ImageView").depth(10).clickable(true).findOnce(1) == null || textContains("专题").findOne(1000) != null) {
-            log("跳过专栏与音乐");
-            back();
-            continue;
-        }
-
-        // 观看时长
-        sleep(random_time(65000));
-
-        back();
-        count++;
-    }
-    sleep(random_time(500));
-}
-
-/*
-*********************视听部分********************
-*/
-back_track_flag = 1;
-
-// 关闭电台广播
-if (!finish_dict['视听学习时长'][0] && !finish_dict['我要选读文章'][0]) {
-    log("关闭电台广播");
-    if (!id("comm_head_title").exists()) back_track();
-    sleep(random_time(delay_time));
-    my_click_clickable("电台");
-    sleep(random_time(delay_time));
-    my_click_clickable("听广播");
-    sleep(random_time(delay_time));
-
-    if (!textStartsWith("最近收听").exists() && !textStartsWith("推荐收听").exists()) {
-        log("等待:" + "v_playing");
-        // 不应该直接通过id寻找控件，因为此页面过多控件，寻找耗时太大
-        // className("android.widget.ImageView").clickable(true).id("v_playing").waitFor();
-        // 换成通过text寻找控件
-        textStartsWith("正在收听").waitFor();
-        log("点击:" + "v_playing");
-        // className("android.widget.ImageView").clickable(true).id("v_playing").findOne().click();
-        textStartsWith("正在收听").findOne().parent().child(1).child(0).click();
-    }
-    sleep(random_time(delay_time));
-}
-
-
-/*
- **********视听学习、听学习时长*********
- */
-if (!finish_dict['视听学习'][0] && !finish_dict['视听学习时长'][0]) {
-    log("视听学习、听学习");
-    if (!id("comm_head_title").exists()) back_track();
-    my_click_clickable("百灵");
-    sleep(random_time(delay_time / 2));
-    my_click_clickable("竖");
-    // 刷新视频列表
-    sleep(random_time(delay_time / 2));
-    my_click_clickable("竖")
-    // 等待视频加载
-    sleep(random_time(delay_time * 3));
-    // 点击第一个视频
-    log("点击:" + "android.widget.FrameLayout");
-    className("android.widget.FrameLayout").clickable(true).depth(24).findOne().click();
-
-    // 为了兼容强国版本为v2.32.0
-    sleep(random_time(delay_time));
-    if (!id("iv_back").exists()) {
-        log("点击:" + "android.widget.FrameLayout");
-        className("android.widget.FrameLayout").clickable(true).depth(24).findOnce(7).click();
-    }
-    sleep(random_time(delay_time));
-    if (text("继续播放").exists()) click("继续播放");
-    if (text("刷新重试").exists()) click("刷新重试");
-
-    var completed_watch_count = finish_dict['视听学习'][1];
-    while (completed_watch_count < 6) {
-        log("视听学习：" + completed_watch_count);
-        sleep(random_time(delay_time / 2));
-        log("等待:" + "android.widget.LinearLayout");
-        className("android.widget.LinearLayout").clickable(true).depth(16).waitFor();
-        // 当前视频的时间长度
-        try {
-            var current_video_time = className("android.widget.TextView").clickable(false).depth(16).findOne().text().match(/\/.*/).toString().slice(1);
-            // 如果视频超过一分钟就跳过
-            if (Number(current_video_time.slice(0, 3)) >= 1) {
-                refresh(true)
-                sleep(random_time(delay_time));
-                continue;
-            }
-            sleep(Number(current_video_time.slice(4)) * 1000 + 500);
-        } catch (error) {
-            // 如果被"即将播放"将读取不到视频的时间长度，此时就sleep 3秒
-            sleep(3000);
-        }
-        completed_watch_count++;
-    }
-
-    back();
-}
-
-// 过渡
-my_click_clickable("我的");
-sleep(random_time(delay_time / 2));
-my_click_clickable("学习积分");
-sleep(random_time(delay_time / 2));
+// 移动到这里，这里是最前面
 
 /*
  *********************竞赛部分********************
@@ -1318,7 +1135,7 @@ if (typeof (finish_dict['专项答题']) != "undefined" && finish_dict['专项�
         }
         // 根据上次搜索时间 加速搜索
         while (quick_search_special_answer_time > 0) {
-            swipe(device.width / 2, (device.height * 13) / 15, device.width / 2, (device.height * 2) / 15, 100);
+            swipe(mywidth / 2, (myheight * 13) / 15, mywidth / 2, (myheight * 2) / 15, 100);
             quick_search_special_answer_time--;
         }
         if (!special_flag) {
@@ -1491,7 +1308,7 @@ function do_contest() {
         log("等待:" + "android.widget.RadioButton");
         className("android.widget.RadioButton").depth(32).clickable(true).waitFor();
         var img = images.inRange(captureScreen(), "#000000", "#444444");
-        img = images.clip(img, pos.left, pos.top, pos.width(), device.height - pos.top);
+        img = images.clip(img, pos.left, pos.top, pos.width(), myheight - pos.top);
         if (whether_improve_accuracy == "yes") {
             var result = baidu_ocr_api(img);
             var question = result[0];
@@ -1609,6 +1426,202 @@ if (typeof (finish_dict['双人对战']) != "undefined" && !finish_dict['双人�
     my_click_clickable("退出");
 }
 
+
+// 移动到这里，这里是最后面
+
+
+// 去province模块
+log("去province模块");
+sleep(random_time(delay_time));
+log("等待:" + "android.view.ViewGroup");
+className("android.view.ViewGroup").depth(15).waitFor();
+sleep(random_time(delay_time));
+log("点击:" + "android.view.ViewGroup");
+// 存在 亮点 栏目时要额外判断
+if (text("亮点").exists()) {
+    className("android.view.ViewGroup").depth(15).findOnce(2).child(4).click();
+} else {
+    className("android.view.ViewGroup").depth(15).findOnce(2).child(3).click();
+}
+
+/*
+ **********本地频道*********
+ */
+if (typeof (finish_dict['本地频道']) != "undefined" && !finish_dict['本地频道'][0]) {
+    // 去本地频道
+    log("去本地频道");
+    log("等待:" + "android.widget.LinearLayout");
+    className("android.widget.LinearLayout").clickable(true).depth(26).waitFor();
+    sleep(random_time(delay_time));
+    log("点击:" + "android.widget.LinearLayout");
+    className("android.widget.LinearLayout").clickable(true).depth(26).drawingOrder(1).findOne().click();
+    sleep(random_time(delay_time));
+    back();
+}
+
+/*
+ *********************阅读部分********************
+ */
+
+// 把音乐暂停
+//
+log("把音乐暂停");
+media.pauseMusic();
+var back_track_flag = 0;
+
+/*
+ **********我要选读文章与分享与广播学习*********
+ */
+
+// 打开电台广播
+if (!finish_dict['视听学习时长'][0] && !finish_dict['我要选读文章'][0]) {
+    log("打开电台广播");
+    sleep(random_time(delay_time));
+    my_click_clickable("电台");
+    sleep(random_time(delay_time));
+    my_click_clickable("听广播");
+    sleep(random_time(delay_time));
+    log("等待:" + "lay_state_icon");
+    id("lay_state_icon").waitFor();
+    var lay_state_icon_pos = id("lay_state_icon").findOne().bounds();
+    click(lay_state_icon_pos.centerX(), lay_state_icon_pos.centerY());
+    sleep(random_time(delay_time));
+    var home_bottom = id("home_bottom_tab_icon_large").findOne().bounds();
+    click(home_bottom.centerX(), home_bottom.centerY());
+}
+
+// 阅读文章次数
+var count = 0;
+
+while (count < 6 - finish_dict['我要选读文章'][1] / 2) {
+    if (!id("comm_head_title").exists() || !className("android.widget.TextView").depth(27).text("切换地区").exists()) back_track();
+    sleep(random_time(delay_time));
+
+    refresh(false);
+
+    var article = id("general_card_image_id").find();
+
+    if (article.length == 0) {
+        refresh(false);
+        continue;
+    }
+
+    for (var i = 0; i < article.length; i++) {
+        log("阅读文章：" + i);
+        sleep(random_time(500));
+
+        try {
+            click(article[i].bounds().centerX(), article[i].bounds().centerY());
+        } catch (error) {
+            continue;
+        }
+        sleep(random_time(delay_time));
+        // 跳过专栏与音乐
+        if (className("ImageView").depth(10).clickable(true).findOnce(1) == null || textContains("专题").findOne(1000) != null) {
+            log("跳过专栏与音乐");
+            back();
+            continue;
+        }
+
+        // 观看时长
+        sleep(random_time(65000));
+
+        back();
+        count++;
+    }
+    sleep(random_time(500));
+}
+
+/*
+*********************视听部分********************
+*/
+back_track_flag = 1;
+
+// 关闭电台广播
+if (!finish_dict['视听学习时长'][0] && !finish_dict['我要选读文章'][0]) {
+    log("关闭电台广播");
+    if (!id("comm_head_title").exists()) back_track();
+    sleep(random_time(delay_time));
+    my_click_clickable("电台");
+    sleep(random_time(delay_time));
+    my_click_clickable("听广播");
+    sleep(random_time(delay_time));
+
+    if (!textStartsWith("最近收听").exists() && !textStartsWith("推荐收听").exists()) {
+        log("等待:" + "v_playing");
+        // 不应该直接通过id寻找控件，因为此页面过多控件，寻找耗时太大
+        // className("android.widget.ImageView").clickable(true).id("v_playing").waitFor();
+        // 换成通过text寻找控件
+        textStartsWith("正在收听").waitFor();
+        log("点击:" + "v_playing");
+        // className("android.widget.ImageView").clickable(true).id("v_playing").findOne().click();
+        textStartsWith("正在收听").findOne().parent().child(1).child(0).click();
+    }
+    sleep(random_time(delay_time));
+}
+
+
+/*
+ **********视听学习、听学习时长*********
+ */
+if (!finish_dict['视听学习'][0] && !finish_dict['视听学习时长'][0]) {
+    log("视听学习、听学习");
+    if (!id("comm_head_title").exists()) back_track();
+    my_click_clickable("百灵");
+    sleep(random_time(delay_time / 2));
+    my_click_clickable("竖");
+    // 刷新视频列表
+    sleep(random_time(delay_time / 2));
+    my_click_clickable("竖")
+    // 等待视频加载
+    sleep(random_time(delay_time * 3));
+    // 点击第一个视频
+    log("点击:" + "android.widget.FrameLayout");
+    className("android.widget.FrameLayout").clickable(true).depth(24).findOne().click();
+
+    // 为了兼容强国版本为v2.32.0
+    sleep(random_time(delay_time));
+    if (!id("iv_back").exists()) {
+        log("点击:" + "android.widget.FrameLayout");
+        className("android.widget.FrameLayout").clickable(true).depth(24).findOnce(7).click();
+    }
+    sleep(random_time(delay_time));
+    if (text("继续播放").exists()) click("继续播放");
+    if (text("刷新重试").exists()) click("刷新重试");
+
+    var completed_watch_count = finish_dict['视听学习'][1];
+    while (completed_watch_count < 6) {
+        log("视听学习：" + completed_watch_count);
+        sleep(random_time(delay_time / 2));
+        log("等待:" + "android.widget.LinearLayout");
+        className("android.widget.LinearLayout").clickable(true).depth(16).waitFor();
+        // 当前视频的时间长度
+        try {
+            var current_video_time = className("android.widget.TextView").clickable(false).depth(16).findOne().text().match(/\/.*/).toString().slice(1);
+            // 如果视频超过一分钟就跳过
+            if (Number(current_video_time.slice(0, 3)) >= 1) {
+                refresh(true)
+                sleep(random_time(delay_time));
+                continue;
+            }
+            sleep(Number(current_video_time.slice(4)) * 1000 + 500);
+        } catch (error) {
+            // 如果被"即将播放"将读取不到视频的时间长度，此时就sleep 3秒
+            sleep(3000);
+        }
+        completed_watch_count++;
+    }
+
+    back();
+}
+
+// 过渡
+my_click_clickable("我的");
+sleep(random_time(delay_time / 2));
+my_click_clickable("学习积分");
+sleep(random_time(delay_time / 2));
+
+
 /*
  **********订阅*********
  */
@@ -1645,7 +1658,7 @@ while (typeof (finish_dict['订阅']) != "undefined" && !finish_dict['订阅'][0
                 // 点击红色的订阅按钮
                 do {
                     var subscribe_pos = findColor(captureScreen(), "#E42417", {
-                        region: [subscribe_button_pos.left, subscribe_button_pos.top, subscribe_button_pos.width(), device.height - subscribe_button_pos.top],
+                        region: [subscribe_button_pos.left, subscribe_button_pos.top, subscribe_button_pos.width(), myheight - subscribe_button_pos.top],
                         threshold: 10,
                     });
                     if (subscribe_pos) {
@@ -1659,15 +1672,15 @@ while (typeof (finish_dict['订阅']) != "undefined" && !finish_dict['订阅'][0
                 // 通过对比 检测到的已订阅控件 的位置来判断是否滑到底部
                 // 滑动前的已订阅控件的位置
                 var complete_subscribe_pos1 = findColor(captureScreen(), "#B2B3B7", {
-                    region: [subscribe_button_pos.left, subscribe_button_pos.top, subscribe_button_pos.width(), device.height - subscribe_button_pos.top],
+                    region: [subscribe_button_pos.left, subscribe_button_pos.top, subscribe_button_pos.width(), myheight - subscribe_button_pos.top],
                     threshold: 10,
                 });
 
-                swipe(device.width / 2, device.height - subscribe_button_pos.top, device.width / 2, subscribe_button_pos.top, random_time(0));
+                swipe(mywidth / 2, myheight - subscribe_button_pos.top, mywidth / 2, subscribe_button_pos.top, random_time(0));
                 sleep(random_time(delay_time / 2));
                 // 滑动后的已订阅控件的位置
                 var complete_subscribe_pos2 = findColor(captureScreen(), "#B2B3B7", {
-                    region: [subscribe_button_pos.left, subscribe_button_pos.top, subscribe_button_pos.width(), device.height - subscribe_button_pos.top],
+                    region: [subscribe_button_pos.left, subscribe_button_pos.top, subscribe_button_pos.width(), myheight - subscribe_button_pos.top],
                     threshold: 10,
                 });
                 // 如果滑动前后已订阅控件的位置不变则判断滑到底部
@@ -1702,7 +1715,7 @@ while (typeof (finish_dict['订阅']) != "undefined" && !finish_dict['订阅'][0
                 while (num_subscribe < 2 && num_refresh < max_num_refresh) {
                     do {
                         var subscribe_pos = findColor(captureScreen(), "#E42417", {
-                            region: [subscribe_button_pos.left, subscribe_button_pos.top, subscribe_button_pos.width(), device.height - subscribe_button_pos.top],
+                            region: [subscribe_button_pos.left, subscribe_button_pos.top, subscribe_button_pos.width(), myheight - subscribe_button_pos.top],
                             threshold: 10,
                         });
                         if (subscribe_pos) {
@@ -1712,7 +1725,7 @@ while (typeof (finish_dict['订阅']) != "undefined" && !finish_dict['订阅'][0
                             sleep(random_time(delay_time));
                         }
                     } while (subscribe_pos && num_subscribe < 2);
-                    swipe(device.width / 2, device.height - subscribe_button_pos.top, device.width / 2, subscribe_button_pos.top, random_time(0));
+                    swipe(mywidth / 2, myheight - subscribe_button_pos.top, mywidth / 2, subscribe_button_pos.top, random_time(0));
                     num_refresh++;
                     sleep(random_time(delay_time / 2));
                 }
