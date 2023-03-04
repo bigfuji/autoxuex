@@ -56,10 +56,10 @@ function check_set_env(whether_mute, whether_froze_app,
     }
 
     // 检查强国版本是否为2.33.0
-    if (package_info.versionCode != 23300) {
-        toast("请使用2.33.0的强国版本，安装包在github上");
-        exit();
-    }
+    // if (package_info.versionCode != 23300) {
+    //    toast("请使用2.33.0的强国版本，安装包在github上");
+    //    exit();
+    // }
 
     // 将设备保持常亮
     device.keepScreenDim();
