@@ -1429,6 +1429,15 @@ if (typeof (finish_dict['双人对战']) != "undefined" && !finish_dict['双人�
 
 // 移动到这里，这里是最后面
 
+// 返回首页
+log("返回首页");
+log("点击:" + "android.view.View");
+className("android.view.View").clickable(true).depth(22).findOne().click();
+log("等待:" + "my_back");
+id("my_back").waitFor();
+sleep(random_time(delay_time / 2));
+log("点击:" + "my_back");
+id("my_back").findOne().click();
 
 // 去province模块
 log("去province模块");
