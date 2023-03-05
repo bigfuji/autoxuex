@@ -1638,7 +1638,9 @@ while (typeof (finish_dict['订阅']) != "undefined" && !finish_dict['订阅'][0
     log("订阅");
     sleep(random_time(delay_time));
     if (!className("android.view.View").depth(22).text("学习积分").exists()) back_track();
+    log("订阅错误版本原因1");
     entry_model('订阅');
+    log("订阅错误版本原因2");
     // 等待加载
     sleep(random_time(delay_time * 3));
 
