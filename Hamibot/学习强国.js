@@ -1634,6 +1634,9 @@ if (!finish_dict['视听学习'][0] && !finish_dict['视听学习时长'][0]) {
 /*
  **********订阅*********
  */
+
+ var back_track_flag = 2;
+ 
 while (typeof (finish_dict['订阅']) != "undefined" && !finish_dict['订阅'][0] && whether_complete_subscription == "yes") {
     log("订阅");
     sleep(random_time(delay_time));
