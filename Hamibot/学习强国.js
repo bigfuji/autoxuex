@@ -1644,6 +1644,7 @@ while (typeof (finish_dict['订阅']) != "undefined" && !finish_dict['订阅'][0
 
     if (!className("android.view.View").desc("强国号\nTab 1 of 2").exists()) {
         toast("强国版本v2.34.0及以上不支持订阅功能");
+        log("订阅错误版本原因");
         back();
     } else {
         // 获取第一个订阅按钮位置
