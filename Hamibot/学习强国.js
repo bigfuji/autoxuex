@@ -1625,10 +1625,10 @@ if (!finish_dict['视听学习'][0] && !finish_dict['视听学习时长'][0]) {
 }
 
 // 过渡
-my_click_clickable("我的");
-sleep(random_time(delay_time / 2));
-my_click_clickable("学习积分");
-sleep(random_time(delay_time / 2));
+// my_click_clickable("我的");
+// sleep(random_time(delay_time / 2));
+//my_click_clickable("学习积分");
+//sleep(random_time(delay_time / 2));
 
 
 /*
