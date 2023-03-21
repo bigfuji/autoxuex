@@ -1432,7 +1432,8 @@ if (typeof (finish_dict['双人对战']) != "undefined" && !finish_dict['双人�
 // 返回首页
 log("返回首页");
 log("点击:" + "android.view.View");
-className("android.view.View").clickable(true).depth(22).column(-1).findOne().click();
+var depth_num = version_number == 13 ? 23 : 22;
+className("android.view.View").clickable(true).depth(depth_num).column(-1).findOne().click();
 log("等待:" + "my_back");
 id("my_back").waitFor();
 sleep(random_time(delay_time / 2));
