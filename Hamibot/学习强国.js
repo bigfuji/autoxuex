@@ -412,6 +412,7 @@ var depth_num = version_number == 13 ? 23 : 22;
 className("android.view.View").clickable(true).depth(depth_num).findOne().click();
 log("等待:" + "my_back");
 id("my_back").waitFor();
+log("这里等到了" + "my_back");
 sleep(random_time(delay_time / 2));
 log("点击:" + "my_back");
 id("my_back").findOne().click();
@@ -1435,7 +1436,9 @@ log("点击:" + "android.view.View");
 var depth_num = version_number == 13 ? 23 : 22;
 className("android.view.View").clickable(true).depth(depth_num).column(-1).findOne().click();
 log("等待:" + "my_back");
-id("my_back").waitFor();
+// 做了修改
+sleep(random_time(delay_time / 2));
+className("android.view.View").clickable(true).depth(depth_num).column(-1).findOne().click();
 sleep(random_time(delay_time / 2));
 log("点击:" + "my_back");
 id("my_back").findOne().click();
