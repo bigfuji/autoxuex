@@ -1580,6 +1580,7 @@ if (!finish_dict['视听学习时长'][0] && !finish_dict['我要选读文章'][
 if (!finish_dict['视听学习'][0] && !finish_dict['视听学习时长'][0]) {
     log("视听学习、听学习");
     if (!id("comm_head_title").exists()) back_track();
+    className("android.widget.ImageView").clickable(true).depth(13).findOne().click()
     my_click_clickable("百灵");
     sleep(random_time(delay_time / 2));
     my_click_clickable("竖");
